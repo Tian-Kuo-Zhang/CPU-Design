@@ -1,3 +1,52 @@
+
+# Datapath Module Interface Specification
+
+This document describes the I/O interfaces of key datapath modules:
+
+- ALU
+- ALUSrc_MUX
+- Sign Extender
+
+---
+
+## 1. ALU
+
+Performs arithmetic and logic operations based on control signal `ALU_Op`.  
+Outputs computation result and branch flag (Zero detection).
+
+| Signal Name  | I/O | Width (bits) | Description |
+|--------------|-----|--------------|-------------|
+| ALU_Op       | I   | 2            | Control signal; determines the operation type of ALU |
+| ALU_A        | I   | 16           | Data path; operand A from Register File |
+| ALU_B        | I   | 16           | Data path; operand B from MUX (Register or Immediate) |
+| ALU_Out      | O   | 16           | Data path; output result of ALU computation |
+| Branch_Flag  | O   | 1            | Control flag; 1 if result is zero, otherwise 0 |
+
+---
+
+## 2. ALUSrc_MUX
+
+2-to-1 multiplexer used to select the second operand of the ALU.
+
+| Signal Name | I/O | Width (bits) | Description |
+|-------------|-----|--------------|-------------|
+| ALU_Src     | I   | 1            | Control signal; selects ALU operand source |
+| Imm_In      | I   | 16           | Data path; input from Sign Extender |
+| Reg_In      | I   | 16           | Data path; input from Register File |
+| Src_Out     | O   | 16           | Data path; selected output to ALU |
+
+---
+
+## 3. Sign Extender
+
+Extends 8-bit immediate value to 16-bit using sign extension.
+
+| Signal Name | I/O | Width (bits) | Description |
+|-------------|-----|--------------|-------------|
+| Imm_In      | I   | 8            | Data path; immediate input from instruction |
+| Imm_Out     | O   | 16           | Data path; sign-extended output |
+
+---
 ---
 
 ## 4. Control Signal Table (ALU + MUX)
