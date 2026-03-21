@@ -13,5 +13,5 @@
 | **and reg**     | `and R1, R2`      | R-type | 0000         | 01       | 01       | 10       | 000011            | R1 ← R1 & R2  | Rt=R2          |
 | **or reg**      | `or R1, R2`       | R-type | 0000         | 01       | 01       | 10       | 000100            | R1 ← R1 \| R2 | Rt=R2          |
 | **jump**        | `jump #1`         | J-type | 0110         | xx       | xx       | -        | 00000001          | PC ← 1        | 8位立即数     |
-| **beq**         |  'beq R1, R2, #5' | J-type | 0111         | 01       |  10      |    -     |  00000101         |  if(Rd == Rs) PC += Imm  |     8位立即数       |
-| **bne**        | `bne R1, R2, #5`   | J-type | 1000         |    01     |  10     | -        | 00000101          | if(Rd != Rs) PC += Imm   | 8位立即数     |
+| **beq**         |  'beq R1, R2, #5' | J-type | 0111         |   -    |  01      |    10     |  00000101         |  if(Rs == Rt) PC += Imm  |     8位立即数       |
+| **bne**        | `bne R1, R2, #5`   | J-type | 1000         |    -    |  01     |    10     | 00000101          | if(Rs != Rt) PC += Imm   | 8位立即数     |
