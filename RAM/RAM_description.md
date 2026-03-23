@@ -1,52 +1,65 @@
-# RAM Module Interface Specification (MIS)
+# RAM Module Interface Specification
 
-**Module Name:** `RAM`  
-
-**Description:**  
-The RAM module serves as the data memory (DM) for the CPU. It supports synchronous read and write operations controlled by `MemRead` and `MemWrite` signals. Data is stored and retrieved on the rising edge of the clock. The module provides 16-bit wide data words and an 8-bit addressable memory space (256 locations).
+## 1. Overview
+The `RAM` module is a **Synchronous Write, Asynchronous Read** memory block. It provides a storage capacity of 256 words, each 16 bits wide. It is designed to interface with a CPU or a system bus where data storage is synchronized to a clock edge, but data retrieval is needed immediately upon address assertion.
 
 ---
 
-## 1. Ports
+## 2. Signal Descriptions
 
-| Port Name         | Direction | Width | Description |
-|------------------|-----------|-------|-------------|
-| `ram_addr_out`    | input     | 16    | Address input from CPU. Only lower 8 bits are used to access memory (0–255). |
-| `ram_wdata_out`   | input     | 16    | Data to be written to memory when `MemWrite` is high. |
-| `MemWrite`        | input     | 1     | Memory write enable. When high, data at `ram_wdata_out` is stored at `ram_addr_out[7:0]`. |
-| `MemRead`         | input     | 1     | Memory read enable. When high, data at `ram_addr_out[7:0]` is output to `ram_rdata_in`. |
-| `clk`             | input     | 1     | Clock signal. Memory operations are synchronous to rising edge. |
-| `ram_rdata_in`    | output    | 16    | Data output to CPU. Provides the value stored at the selected address during read. |
-
----
-
-## 2. Internal Signals
-
-| Signal Name      | Width | Description |
-|-----------------|-------|-------------|
-| `data_mem`       | 16    | 16-bit wide memory array, 256 entries (addressed 0–255) |
+| Signal Name     | Direction | Width | Description                                                                                                       |
+| :-------------- | :-------: | :---: | :---------------------------------------------------------------------------------------------------------------- |
+| `clk`           | Input     | 1     | **System Clock**: Driving edge for memory write operations (Active on Rising Edge).                               |
+| `ram_addr_out`  | Input     | 16    | **Address Bus**: 16-bit input. Internal mapping uses only the lower 8 bits `[7:0]` to address 256 locations.       |
+| `ram_wdata_out` | Input     | 16    | **Write Data**: The 16-bit data to be stored in the RAM during a write cycle.                                     |
+| `MemWrite`      | Input     | 1     | **Write Enable**: When HIGH (1'b1), data on `ram_wdata_out` is saved to memory at the next `clk` rising edge.     |
+| `MemRead`       | Input     | 1     | **Read Enable**: When HIGH (1'b1), memory content is output to `ram_rdata_in`. When LOW, output is forced to 0.   |
+| `ram_rdata_in`  | Output    | 16    | **Read Data**: The 16-bit data retrieved from memory, sent back to the CPU or Bus.                                |
 
 ---
 
-## 3. Functional Description
+## 3. Functional Behavior
 
-1. **Synchronous Write:**  
-   On the rising edge of `clk`, if `MemWrite` is high, the value on `ram_wdata_out` is written to `data_mem[ram_addr_out[7:0]]`.
+### 3.1 Write Cycle (Synchronous)
+Writing to the memory is synchronized to the positive edge of the clock. 
+* **Condition**: `MemWrite` must be asserted (1'b1) before or at the rising edge of `clk`.
+* **Action**: `data_mem[addr[7:0]] <= ram_wdata_out;`
+* **Latency**: The data is committed to the internal array at the clock edge.
 
-2. **Synchronous Read:**  
-   On the rising edge of `clk`, if `MemRead` is high, the data stored at `data_mem[ram_addr_out[7:0]]` is output to `ram_rdata_in`. If `MemRead` is low, `ram_rdata_in` outputs 0 to prevent bus contention.
-
-3. **Memory Size and Addressing:**  
-   The module provides 256 memory locations (8-bit addressing) with 16-bit width per location. Only `ram_addr_out[7:0]` is used for indexing; higher bits are ignored.
-
-4. **Clock Synchronization:**  
-   All memory operations are synchronous to the rising edge of `clk`.
+### 3.2 Read Cycle (Asynchronous)
+Reading is implemented as combinational logic. It does not require a clock edge.
+* **Condition**: `MemRead` must be asserted (1'b1).
+* **Action**: `ram_rdata_in = data_mem[ram_addr_out[7:0]];`
+* **Bus Protection**: If `MemRead` is de-asserted (1'b0), the output `ram_rdata_in` is driven to `16'h0000`. This prevents "bus noise" or stale data from propagating when the memory is not being accessed.
 
 ---
 
-## 4. Notes / Remarks
+## 4. Addressing Logic
+The module uses an internal memory array `data_mem [0:255]`. 
+* Although the input `ram_addr_out` is 16-bit, the module performs **Address Truncation**.
+* Effective Address = `ram_addr_out[7:0]`.
+* *Note: Ensure the system designer is aware that addresses `0x0001` and `0x0101` will access the same physical memory cell.*
 
-- Both read and write operations are synchronous; no asynchronous memory access is supported.  
-- Unused memory locations are initialized to unknown (can be optionally initialized to 0 for simulation).  
-- Designed to interface directly with the CPU datapath, including Load/Store instructions.  
-- Writing and reading the same address in the same clock cycle will result in the read returning the new value if `MemWrite` and `MemRead` are both high (behavior may be tool-dependent).  
+---
+
+## 5. Timing Characteristics
+
+| Parameter           | Requirement | Description                                                                 |
+| :------------------ | :---------- | :-------------------------------------------------------------------------- |
+| **Write Setup** | $t_{su}$    | Address and Write Data must be stable before `clk` rising edge.             |
+| **Read Access Time**| $t_{acc}$   | Combinational delay from `ram_addr_out` or `MemRead` change to valid output.|
+| **Clock Frequency** | $f_{max}$   | Dependent on target FPGA/ASIC technology (standard 100MHz+ supported).      |
+
+---
+
+## 6. Example Instantiation (Verilog)
+
+```verilog
+RAM u_data_memory (
+    .clk            (sys_clk),          // System clock
+    .ram_addr_out   (cpu_addr),         // 16-bit address from CPU
+    .ram_wdata_out  (cpu_write_data),   // 16-bit data from CPU
+    .MemWrite       (control_mem_we),   // Write enable signal
+    .MemRead        (control_mem_re),   // Read enable signal
+    .ram_rdata_in   (mem_read_data)     // 16-bit data to CPU
+);
