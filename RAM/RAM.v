@@ -40,9 +40,8 @@ module RAM(
         end
     end
 
-    // --- sync read ---
-    // At the rising edge of the clock, if memread is 1, the data corresponding to the address is output
-    always @(posedge clk) begin
+    // --- async read ---
+    always @(*) begin
         if (MemRead == 1'b1) begin
             ram_rdata_in <= data_mem[ram_addr_out[7:0]];
         end
