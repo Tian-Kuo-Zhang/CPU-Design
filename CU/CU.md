@@ -40,6 +40,6 @@ Generates control signals for the datapath and fetch unit based on the decoded i
 | ALUSrc | O | 1 | Control path; selects ALU B input source: register or immediate |
 | MemtoReg | O | 1 | Control path; selects RF write-back source: ALU result or memory data |
 | PCSrc | O | 2 | Control path; selects next PC source: sequential, branch, or jump |
-| Op_in | O | 4 | Control path; specifies ALU execution operation |
+| Op_in | O | 2 | Control path; specifies ALU execution operation |
 | MemRead | O | 1 | Control path; enables RAM read operation |
 | MemWrite | O | 1 | Control path; enables RAM write operation |
