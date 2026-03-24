@@ -43,11 +43,11 @@ module RAM(
     // --- async read ---
     always @(*) begin
         if (MemRead == 1'b1) begin
-            ram_rdata_in <= data_mem[ram_addr_out[7:0]];
+            ram_rdata_in = data_mem[ram_addr_out[7:0]];
         end
         else begin
             // when not read, keep it 0 to prevent the chaos in bus
-            ram_rdata_in <= 16'h0000;
+            ram_rdata_in = 16'h0000;
         end
     end
 
