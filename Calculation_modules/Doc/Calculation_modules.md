@@ -43,7 +43,7 @@ Extends 8-bit immediate value to 16-bit using sign extension.
 
 | Signal Name | I/O | Width (bits) | Description |
 |-------------|-----|--------------|-------------|
-| Imm_In      | I   | 8            | Data path; immediate input from instruction |
+| Imm_In      | I   | 8            | Data path; immediate input from IR |
 | Imm_Out     | O   | 16           | Data path; sign-extended output |
 
 ---
