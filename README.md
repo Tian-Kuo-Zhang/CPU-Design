@@ -12,9 +12,9 @@
 | **sub reg**     | `SUB R1, R2`      | R-type | 0000         | 01       | 01       | 10       | 000010            | R1 ← R1 - R2  | Rt=R2          |
 | **and reg**     | `AND R1, R2`      | R-type | 0000         | 01       | 01       | 10       | 000011            | R1 ← R1 & R2  | Rt=R2          |
 | **or reg**      | `OR R1, R2`       | R-type | 0000         | 01       | 01       | 10       | 000100            | R1 ← R1 \| R2 | Rt=R2          |
-| **xor reg (new)**  | `XOR R1, R2` | R-type | 0000           | 01 | 01 | 10 | 000101| Rd <- Rd ^ Rt |
-| **rol1 (new)** | `ROL1 R1` | R-type | 0000                 | 01 | 01 |00| 000110 | Rd <- rotate_left(Rs, 1)|
-| **ror1 (new)** | `ROR1 R1` | R-type | 0000                 | 01 | 01 | 00 | 000111 |Rd <- rotate_right(Rs, 1) |
+| **xor reg (new)**  | `XOR R1, R2` | R-type | 0000           | 01 | 01 | 10 | 000101| R1 <- R1 ^ R2 |
+| **rol1 (new)** | `ROL1 R1` | R-type | 0000                 | 01 | 01 |00| 000110 | R1 <- rotate_left(R1, 1)|
+| **ror1 (new)** | `ROR1 R1` | R-type | 0000                 | 01 | 01 | 00 | 000111 |R1 <- rotate_right(R1, 1) |
 | **jump**        | `JUMP #1`         | J-type | 0110         | xx       | xx       | -        | 00000001          | PC ← 1        | 8位立即数     |
-| **beq**         |  `BEQ R1, R2, #5` | J-type | 0111         |   -    |  01      |    10     |  00000101         |  if(Rs == Rt) PC += Imm  |     8位立即数       |
-| **bne**        | `BNE R1, R2, #5`   | J-type | 1000         |    -    |  01     |    10     | 00000101          | if(Rs != Rt) PC += Imm   | 8位立即数     |
+| **beq**         |  `BEQ R1, R2, #5` | J-type | 0111         |   -    |  01      |    10     |  00000101         |  if(R1 == R2) PC += Imm  |     8位立即数       |
+| **bne**        | `BNE R1, R2, #5`   | J-type | 1000         |    -    |  01     |    10     | 00000101          | if(R1 != R2) PC += Imm   | 8位立即数     |
