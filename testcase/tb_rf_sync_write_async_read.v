@@ -3,6 +3,7 @@
 module tb_rf_sync_write_async_read;
 
     reg         clk;
+    reg         reset = 1'b0;
     reg         RegWrite;
     reg  [1:0]  raddr1;
     reg  [1:0]  raddr2;
@@ -13,6 +14,7 @@ module tb_rf_sync_write_async_read;
 
     RF dut (
         .clk      (clk),
+        .reset    (reset),
         .RegWrite (RegWrite),
         .raddr1   (raddr1),
         .raddr2   (raddr2),
