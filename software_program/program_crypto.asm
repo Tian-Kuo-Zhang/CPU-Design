@@ -1,4 +1,4 @@
-; program_crypto.asm (collision-free lookup version)
+; program_crypto.asm 
 ; Function:
 ;   mode=0 (En): encryption
 ;   mode=1 (dE): decryption
