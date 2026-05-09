@@ -13,7 +13,7 @@ module ALU (
 
     // Control signal
     // Determines ALU operation type
-    input  [1:0] ALU_Op,
+    input  wire [3:0]  ALUOp,
 
     // Operand A (from Register File)
     input  [15:0] ALU_A,
@@ -35,14 +35,17 @@ module ALU (
 //--------------------------------------------------------------
 
 always @(*) begin
-    case (ALU_Op)
-
-        2'b00: ALU_Out = ALU_A + ALU_B;   // ADD
-        2'b01: ALU_Out = ALU_A - ALU_B;   // SUB
-        2'b10: ALU_Out = ALU_A & ALU_B;   // AND
-        2'b11: ALU_Out = ALU_A | ALU_B;   // OR
-
-        default: ALU_Out = 16'b0;
+     case (ALUOp)
+            4'b0000: ALU_out = A + B;
+            4'b0001: ALU_out = A - B;
+            4'b0010: ALU_out = A & B;
+            4'b0011: ALU_out = A | B;
+            4'b0100: ALU_out = B;
+            4'b0101: ALU_out = A;
+            4'b0110: ALU_out = A ^ B;
+            4'b0111: ALU_out = {A[14:0], A[15]};
+            4'b1000: ALU_out = {A[0], A[15:1]};
+            default: ALU_out = 16'b0;
 
     endcase
 end
